@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import accessibility
+from app.routers import accessibility
 
 app = FastAPI(title="API de Acessibilidade DUA")
 
