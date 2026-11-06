@@ -1,0 +1,36 @@
+# =========================
+# BACKEND (Python/FastAPI)
+# =========================
+# Ambientes virtuais
+venv/
+env/
+.env
+
+# Cache e arquivos compilados
+__pycache__/
+*.py[cod]
+*$py.class
+
+# =========================
+# FRONTEND (Flutter/Dart)
+# =========================
+# Pastas de build e dependências
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+
+# Arquivos locais do Android/iOS gerados pelo Flutter
+android/local.properties
+android/key.properties
+ios/.symlinks/
+ios/Pods/
+
+# =========================
+# IDEs e Sistema (PyCharm / Android Studio / VSCode)
+# =========================
+.idea/
+.vscode/
+*.iml
+.DS_Store
