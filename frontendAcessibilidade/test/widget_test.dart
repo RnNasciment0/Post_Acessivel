@@ -7,7 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:frontend_acessibilidade/screens/post_validator_screen.dart';
+import 'package:frontend_acessibilidade/screens/postValidatorScreen.dart';
 
 void main() {
   testWidgets('Validador de Acessibilidade smoke test', (WidgetTester tester) async {

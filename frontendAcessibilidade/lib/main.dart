@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/post_validator_screen.dart';
+import 'screens/postValidatorScreen.dart';
 
 void main() {
   runApp(const MaterialApp(

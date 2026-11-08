@@ -1,4 +1,4 @@
-# app/routers/accessibility.py
+from typing import List
 from fastapi import APIRouter, File, UploadFile, Form
 from app.services.contrastCalc import calculate_contrast
 from app.services.altTextVal import validate_alt_text
@@ -9,30 +9,39 @@ router = APIRouter()
 
 @router.post("/validate-post")
 async def validate_post(
-        # Recebemos o texto como formulário e a imagem como ficheiro
         alt_text: str = Form(...),
-        image: UploadFile = File(...)
+        images: List[UploadFile] = File(...)
 ):
-    # 1. Lê a imagem recebida
-    image_bytes = await image.read()
+    images_results = []
 
-    # 2. Extrai as cores reais da imagem
-    bg_color_hex, text_color_hex = extract_colors_from_image(image_bytes)
+    for image in images:
+        image_bytes = await image.read()
+        try:
+            # Tenta extrair as cores
+            bg_color_hex, text_color_hex = extract_colors_from_image(image_bytes)
+            contrast_ratio = calculate_contrast(bg_color_hex, text_color_hex)
+            is_contrast_valid = contrast_ratio >= 4.5
 
-    # 3. Calcula o contraste
-    contrast_ratio = calculate_contrast(bg_color_hex, text_color_hex)
-    is_contrast_valid = contrast_ratio >= 4.5
+            images_results.append({
+                "filename": image.filename,
+                "contrast_ratio": round(contrast_ratio, 2),
+                "is_valid": is_contrast_valid,
+                "message": f"Adequado ({bg_color_hex} e {text_color_hex})." if is_contrast_valid else f"Baixo contraste ({bg_color_hex} e {text_color_hex}). Sugestão: Escurecer o texto ou clarear o fundo."
+            })
+        except Exception as e:
+            # Se a imagem tiver formato não suportado ou falhar, não trava o app inteiro
+            images_results.append({
+                "filename": image.filename,
+                "contrast_ratio": 0.0,
+                "is_valid": False,
+                "message": "Não foi possível extrair as cores desta imagem (formato incompatível)."
+            })
 
-    # 4. Valida o texto alternativo
     alt_text_analysis = validate_alt_text(alt_text)
 
     return {
         "accessibility_score": {
-            "contrast": {
-                "ratio": round(contrast_ratio, 2),
-                "is_valid": is_contrast_valid,
-                "message": f"Contraste adequado ({bg_color_hex} e {text_color_hex})." if is_contrast_valid else f"Baixo contraste entre as cores principais ({bg_color_hex} e {text_color_hex})."
-            },
+            "carousel_analysis": images_results,
             "alt_text": alt_text_analysis
         }
     }
